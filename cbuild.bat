@@ -1,0 +1,1 @@
+gcc -fPIC -shared -O3 -o ./liblines.dll csource/line_calculator.cpp
