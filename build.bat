@@ -1,7 +1,7 @@
 @ECHO off
 CALL cbuild.bat
 ::Images have to be done specially
-python -O -m PyInstaller --noconfirm --name voxel^
+python -O -m PyInstaller -w --noconfirm --name voxel^
     --path="./common"^
     --path="./csource"^
     --path="./utils"^
