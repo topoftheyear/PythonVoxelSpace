@@ -79,7 +79,7 @@ void get_lines(LineStruct *ls) {
 
             int heightOnScreen = (int)floor(heightz - (invz * heightMapNum));
 
-            if (heightOnScreen < hiddenY[i]) {
+            if (heightOnScreen < hiddenY[i] && hiddenY[i] > -1) {
                 ls->lines[lineCount][0] = i;
                 ls->lines[lineCount][1] = heightOnScreen;
                 ls->lines[lineCount][2] = hiddenY[i];
