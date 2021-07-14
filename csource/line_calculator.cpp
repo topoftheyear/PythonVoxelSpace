@@ -96,7 +96,7 @@ void get_lines(LineStruct *ls) {
                 ls->lines[lineCount][4] = color[1];
                 ls->lines[lineCount][5] = color[2];
 
-                ls->points[roundedplx][roundedply][1] = i;
+                ls->points[roundedplx][roundedply][0] = i;
                 ls->points[roundedplx][roundedply][1] = heightOnScreen;
 
                 hiddenY[i] = heightOnScreen;
