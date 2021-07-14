@@ -25,14 +25,6 @@ struct LineStruct {
 
 extern "C"
 void get_lines(LineStruct *ls) {
-    // Clear out points list
-    for (int x = 0; x < 1024; x++) {
-        for (int y = 0; y < 1024; y++) {
-            ls->points[x][y][0] = -1;
-            ls->points[x][y][1] = -1;
-        }
-    }
-
     // Precalculate viewing angle parameters
     float sinPhi = sin(ls->rotation);
     float cosPhi = cos(ls->rotation);
@@ -95,9 +87,6 @@ void get_lines(LineStruct *ls) {
                 ls->lines[lineCount][3] = color[0];
                 ls->lines[lineCount][4] = color[1];
                 ls->lines[lineCount][5] = color[2];
-
-                ls->points[roundedplx][roundedply][0] = i;
-                ls->points[roundedplx][roundedply][1] = heightOnScreen;
 
                 hiddenY[i] = heightOnScreen;
                 lineCount += 1;

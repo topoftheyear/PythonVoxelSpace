@@ -38,7 +38,6 @@ class LineStruct(ctypes.Structure):
         ('numLines', ctypes.c_int),
         ('heightMap', (ctypes.c_int * 1024) * 1024),
         ('colorMap', ((ctypes.c_int * 3) * 1024) * 1024),
-        ('points', ((ctypes.c_int * 2) * 1024) * 1024),
         ('currentX', ctypes.c_float),
         ('currentY', ctypes.c_float),
         ('rotation', ctypes.c_float),
