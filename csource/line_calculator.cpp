@@ -10,7 +10,6 @@ struct LineStruct {
     int numLines;
     int heightMap[1024][1024];
     int colorMap[1024][1024][3];
-    int points[1024][1024][2];
     float currentX;
     float currentY;
     float rotation;
