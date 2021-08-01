@@ -54,6 +54,8 @@ void get_lines(LineStruct *ls) {
         float invz = 1 / z * ls->scaleHeight;
         float heightz = (ls->height * invz) + ls->horizon;
 
+        float colorLerp = z / ls->distance;
+
         for (int i = 0; i < ls->screenWidth; i++) {
             int roundedplx = (int)floor(plx);
             int roundedply = (int)floor(ply);
@@ -77,15 +79,20 @@ void get_lines(LineStruct *ls) {
             int heightMapNum = ls->heightMap[roundedplx][roundedply];
             int* color = ls->colorMap[roundedplx][roundedply];
 
+            // Lerp color to color of sky
+            int colorR = (int)(colorLerp * (135 - color[0]) + color[0]);
+            int colorG = (int)(colorLerp * (206 - color[1]) + color[1]);
+            int colorB = (int)(colorLerp * (235 - color[2]) + color[2]);
+
             int heightOnScreen = (int)floor(heightz - (invz * heightMapNum));
 
             if (heightOnScreen < hiddenY[i] && hiddenY[i] > -1) {
                 ls->lines[lineCount][0] = i;
                 ls->lines[lineCount][1] = heightOnScreen;
                 ls->lines[lineCount][2] = hiddenY[i];
-                ls->lines[lineCount][3] = color[0];
-                ls->lines[lineCount][4] = color[1];
-                ls->lines[lineCount][5] = color[2];
+                ls->lines[lineCount][3] = colorR;
+                ls->lines[lineCount][4] = colorG;
+                ls->lines[lineCount][5] = colorB;
 
                 hiddenY[i] = heightOnScreen;
                 lineCount += 1;
