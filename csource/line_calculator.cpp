@@ -8,6 +8,8 @@ using namespace std;
 struct LineStruct {
     int lines[1000000][6];
     int numLines;
+    int objects[10000][6];
+    int numObjects;
     int heightMap[1024][1024];
     int colorMap[1024][1024][3];
     float currentX;
@@ -96,6 +98,16 @@ void get_lines(LineStruct *ls) {
 
                 hiddenY[i] = heightOnScreen;
                 lineCount += 1;
+            }
+
+            // Iterate through objects to see if it should be drawn here too
+            for (int n = 0; n < ls->numObjects; n++) {
+                if (ls->objects[n][1] == roundedplx && ls->objects[n][2] == roundedply) {
+                    if (ls->objects[n][4] == 0) {
+                        ls->objects[n][4] = i;
+                        ls->objects[n][5] = (int)floor(heightz - (invz * ls->objects[n][3]));
+                    }
+                }
             }
 
             plx += dx;

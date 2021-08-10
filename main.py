@@ -1,12 +1,15 @@
 import math
+import random
 import sys
 import time
 
 import ctypes
 import cv2
+import numpy as np
 import pygame
 import pygame.gfxdraw
 
+from common.game_object import GameObject
 from common.point import Point
 from common.settings import Settings
 from utils.helpers import *
@@ -30,12 +33,20 @@ heightmap = cv2.imread('img/1H.png', 0)
 colormap = cv2.imread('img/1C.png', -1)
 colormap = cv2.cvtColor(colormap, cv2.COLOR_BGR2RGB)
 
+object_list = dict()
+
+worf = pygame.image.load('img/worf.png').convert_alpha()
+worf = pygame.transform.scale(worf, (int(worf.get_width() / settings.res_width_ratio),
+                                     int(worf.get_height() / settings.res_height_ratio)))
+
 
 # establish c function
 class LineStruct(ctypes.Structure):
     _fields_ = [
         ('lines', (ctypes.c_int * 6) * 1000000),
         ('numLines', ctypes.c_int),
+        ('objects', (ctypes.c_int * 6) * 10000),
+        ('numObjects', ctypes.c_int),
         ('heightMap', (ctypes.c_int * 1024) * 1024),
         ('colorMap', ((ctypes.c_int * 3) * 1024) * 1024),
         ('currentX', ctypes.c_float),
@@ -82,6 +93,13 @@ def main():
     ls.colorMap = colormap_to_ctypes(ls.colorMap, colormap)
     ls.screenWidth = surface.get_width()
     ls.screenHeight = surface.get_height()
+
+    # create a few game objects
+    for n in range(50):
+        x = random.randint(0, 1023)
+        y = random.randint(0, 1023)
+        obj = GameObject(Point(x, y), heightmap[x, y])
+        object_list[obj.id] = obj
 
     while 1:
         start = time.time()
@@ -164,6 +182,17 @@ def main():
         ls.scaleHeight = scale_height / resolution_height_ratio
         ls.distance = settings.view_distance
         ls.quality = quality
+        ls.numObjects = len(object_list.keys())
+        x = 0
+        for obj in object_list.values():
+            ls.objects[x][0] = obj.id
+            ls.objects[x][1] = obj.position.x
+            ls.objects[x][2] = obj.position.y
+            ls.objects[x][3] = obj.height
+            ls.objects[x][4] = 0
+            ls.objects[x][5] = 0
+
+            x += 1
 
         render()
 
@@ -187,6 +216,33 @@ def render():
             line[1],
             line[2],
             [line[3], line[4], line[5]],
+        )
+
+    for x in range(ls.numObjects):
+        obj = object_list[ls.objects[x][0]]
+        pos = [ls.objects[x][4], ls.objects[x][5]]
+
+        if pos[0] == 0 and pos[1] == 0:
+            continue
+
+        if pos[0] < 0 or pos[0] >= 1023 and pos[1] < 0 or pos[1] >= 1023:
+            continue
+
+        # Scale based on distance from camera
+        campy = np.array([ls.currentX, ls.currentY, ls.height])
+        objpy = np.array([obj.position.x, obj.position.y, obj.height])
+        scale_distance = np.linalg.norm(campy - objpy)
+        scale_ratio = (1 / (scale_distance / settings.view_distance)) / (settings.view_distance / 10)
+        scaled_obj = worf
+        scaled_obj = pygame.transform.scale(scaled_obj, (int(scaled_obj.get_width() * scale_ratio),
+                                                         int(scaled_obj.get_height() * scale_ratio)))
+
+        shifted_width = int(pos[0] - (scaled_obj.get_width() / 2))
+        shifted_height = int(pos[1] - (scaled_obj.get_height() / 2))
+
+        surface.blit(
+            scaled_obj,
+            [shifted_width, shifted_height]
         )
 
     pygame.transform.scale(surface, screen.get_size(), scaled_surface)

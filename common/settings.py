@@ -29,6 +29,10 @@ class Settings(metaclass=Singleton):
         self.move_up = string_to_pygame_key(self.config['Controls']['MoveUp'])
         self.move_down = string_to_pygame_key(self.config['Controls']['MoveDown'])
 
+        # Derived settings
+        self.res_width_ratio = self.res_x / self.internal_res_x
+        self.res_height_ratio = self.res_y / self.internal_res_y
+
     def save(self):
         with open('settings.ini', 'w') as configfile:
             self.config.write(configfile)
